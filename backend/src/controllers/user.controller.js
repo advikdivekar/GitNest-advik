@@ -32,6 +32,41 @@ export const getUserProfile = asyncHandler(async (req, res, next) => {
 });
 
 /**
+ * @desc    Follow a user
+ * @route   POST /api/v1/users/:username/follow
+ * @access  Private
+ */
+export const followUser = asyncHandler(async (req, res, next) => {
+  const target = await User.findOne({ username: req.params.username.toLowerCase() });
+  if (!target) return next(new AppError('User not found', 404));
+  if (target._id.equals(req.user._id)) return next(new AppError('You cannot follow yourself', 400));
+
+  const alreadyFollowing = target.followers.some((id) => id.equals(req.user._id));
+  if (alreadyFollowing) return next(new AppError('Already following this user', 400));
+
+  await User.findByIdAndUpdate(target._id, { $push: { followers: req.user._id } });
+  await User.findByIdAndUpdate(req.user._id, { $push: { following: target._id } });
+
+  sendSuccess(res, 200, null, 'Followed successfully');
+});
+
+/**
+ * @desc    Unfollow a user
+ * @route   DELETE /api/v1/users/:username/follow
+ * @access  Private
+ */
+export const unfollowUser = asyncHandler(async (req, res, next) => {
+  const target = await User.findOne({ username: req.params.username.toLowerCase() });
+  if (!target) return next(new AppError('User not found', 404));
+  if (target._id.equals(req.user._id)) return next(new AppError('You cannot unfollow yourself', 400));
+
+  await User.findByIdAndUpdate(target._id, { $pull: { followers: req.user._id } });
+  await User.findByIdAndUpdate(req.user._id, { $pull: { following: target._id } });
+
+  sendSuccess(res, 200, null, 'Unfollowed successfully');
+});
+
+/**
  * @desc    Update current user's profile
  * @route   PUT /api/v1/users/profile
  * @access  Private

@@ -1,13 +1,12 @@
 import express from 'express';
-import { getUserProfile, updateProfile } from '../controllers/user.controller.js';
+import { getUserProfile, updateProfile, followUser, unfollowUser } from '../controllers/user.controller.js';
 import { protect } from '../middleware/authMiddleware.js';
 
 const router = express.Router();
 
-// Public route to view any user's profile
-router.get('/:username', getUserProfile);
-
-// Protected route to update current user's profile
 router.put('/profile', protect, updateProfile);
+router.get('/:username', getUserProfile);
+router.post('/:username/follow', protect, followUser);
+router.delete('/:username/follow', protect, unfollowUser);
 
 export default router;

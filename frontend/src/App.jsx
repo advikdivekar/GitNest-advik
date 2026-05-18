@@ -12,6 +12,7 @@ import GitNestHomepage from './pages/GitNestHomepage';
 import NotFound from './pages/NotFound';
 import PullRequestsPage from './pages/PullRequestsPage';
 import PullRequestDetailPage from './pages/PullRequestDetailPage';
+import UserProfile from './pages/UserProfile';
 
 
 const Dashboard = () => {
@@ -54,6 +55,7 @@ function App() {
         <Route path="/" element={<GitNestHomepage />} />
         <Route path="/pull-requests" element={<PullRequestsPage />} />
         <Route path="/pull-requests/:id" element={<PullRequestDetailPage />} />
+        <Route path="/:username" element={<UserProfile />} />
 
         <Route element={<ProtectedRoute />}>
           <Route path="/dashboard" element={<Dashboard />} />
