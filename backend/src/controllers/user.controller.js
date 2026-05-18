@@ -90,3 +90,4 @@ export const updateProfile = asyncHandler(async (req, res, next) => {
 
   sendSuccess(res, 200, user, 'Profile updated successfully');
 });
+
