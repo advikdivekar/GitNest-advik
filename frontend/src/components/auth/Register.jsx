@@ -8,23 +8,42 @@ const Register = () => {
     email: '',
     password: '',
   });
+  const [validationErrors, setValidationErrors] = useState({});
 
   const { register, loading, error, clearError } = useAuthStore();
   const navigate = useNavigate();
+
   useEffect(() => {
     clearError();
+    setValidationErrors({});
   }, [clearError]);
+
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
+    // Clear field-specific error when user starts typing
+    if (validationErrors[name]) {
+      setValidationErrors({ ...validationErrors, [name]: '' });
+    }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setValidationErrors({});
+
     try {
       await register(formData);
       navigate('/');
     } catch (err) {
-      console.error(err);
+      // Error is already handled and displayed via auth store
+      // Parse field-level errors if available
+      if (err.response?.data?.errors && Array.isArray(err.response.data.errors)) {
+        const fieldErrors = {};
+        err.response.data.errors.forEach((error) => {
+          fieldErrors[error.field] = error.message;
+        });
+        setValidationErrors(fieldErrors);
+      }
     }
   };
 
@@ -37,40 +56,64 @@ const Register = () => {
           </h2>
         </div>
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
-          {error && <div className="text-red-500 text-sm text-center">{error}</div>}
+          {error && <div className="text-red-500 text-sm text-center p-2 bg-red-50 dark:bg-red-900/30 rounded">{error}</div>}
           <div className="rounded-md shadow-sm -space-y-px">
             <div>
               <input
                 name="username"
                 type="text"
                 required
-                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 dark:border-gray-700 placeholder-gray-500 text-gray-900 dark:text-white dark:bg-gray-800 rounded-t-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm transition-colors"
+                className={`appearance-none rounded-none relative block w-full px-3 py-2 border placeholder-gray-500 text-gray-900 dark:text-white dark:bg-gray-800 rounded-t-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm transition-colors ${
+                  validationErrors.username
+                    ? 'border-red-500 dark:border-red-500'
+                    : 'border-gray-300 dark:border-gray-700'
+                }`}
                 placeholder="Username"
                 value={formData.username}
                 onChange={handleChange}
               />
+              {validationErrors.username && (
+                <p className="text-red-500 text-xs mt-1">{validationErrors.username}</p>
+              )}
             </div>
             <div>
               <input
                 name="email"
                 type="email"
                 required
-                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 dark:border-gray-700 placeholder-gray-500 text-gray-900 dark:text-white dark:bg-gray-800 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm transition-colors"
+                className={`appearance-none rounded-none relative block w-full px-3 py-2 border placeholder-gray-500 text-gray-900 dark:text-white dark:bg-gray-800 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm transition-colors ${
+                  validationErrors.email
+                    ? 'border-red-500 dark:border-red-500'
+                    : 'border-gray-300 dark:border-gray-700'
+                }`}
                 placeholder="Email address"
                 value={formData.email}
                 onChange={handleChange}
               />
+              {validationErrors.email && (
+                <p className="text-red-500 text-xs mt-1">{validationErrors.email}</p>
+              )}
             </div>
             <div>
               <input
                 name="password"
                 type="password"
                 required
-                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 dark:border-gray-700 placeholder-gray-500 text-gray-900 dark:text-white dark:bg-gray-800 rounded-b-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm transition-colors"
+                className={`appearance-none rounded-none relative block w-full px-3 py-2 border placeholder-gray-500 text-gray-900 dark:text-white dark:bg-gray-800 rounded-b-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm transition-colors ${
+                  validationErrors.password
+                    ? 'border-red-500 dark:border-red-500'
+                    : 'border-gray-300 dark:border-gray-700'
+                }`}
                 placeholder="Password"
                 value={formData.password}
                 onChange={handleChange}
               />
+              {validationErrors.password && (
+                <p className="text-red-500 text-xs mt-1">{validationErrors.password}</p>
+              )}
+              <p className="text-gray-500 dark:text-gray-400 text-xs mt-2">
+                Password must be at least 8 characters with uppercase, lowercase, and number
+              </p>
             </div>
           </div>
 
@@ -78,7 +121,7 @@ const Register = () => {
             <button
               type="submit"
               disabled={loading}
-              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50"
+              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 transition-colors"
             >
               {loading ? 'Registering...' : 'Register'}
             </button>
@@ -95,3 +138,4 @@ const Register = () => {
 };
 
 export default Register;
+
