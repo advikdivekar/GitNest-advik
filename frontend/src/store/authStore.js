@@ -119,17 +119,12 @@ export const useAuthStore = create(
         set({ loading: true, error: null });
         try {
           const res = await getMe();
-          if (res.data) {
-            set({
-              user: res.data,
-              isAuthenticated: true,
-              loading: false,
-            });
-          } else {
-            throw new Error('Invalid response structure');
-          }
+          set({
+            user: res.data,
+            isAuthenticated: true,
+            loading: false,
+          });
         } catch {
-          // Token is invalid or expired - clear auth state
           set({
             user: null,
             token: null,

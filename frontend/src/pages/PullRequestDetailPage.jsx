@@ -161,7 +161,6 @@ function CommentItem({ comment }) {
 }
 
 export default function PullRequestDetailPage() {
-  useParams();
   const { user } = useAuthStore();
   const pr = MOCK_PR; // Replace with: usePR(id) or API call
 
