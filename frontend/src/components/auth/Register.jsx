@@ -30,10 +30,12 @@ const Register = () => {
     username: "",
     email: "",
     password: "",
+    confirmPassword: "",
   });
 
   const [validationErrors, setValidationErrors] = useState({});
   const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const { register, loading, error, clearError } = useAuthStore();
   const addToast = useToastStore((s) => s.addToast);
@@ -57,12 +59,18 @@ const Register = () => {
   const isPasswordValid = Object.values(passwordRules).every(Boolean);
   const isEmailValid = emailRegex.test(formData.email.trim());
 
+  const passwordsMatch =
+    formData.confirmPassword.trim().length > 0 &&
+    formData.password === formData.confirmPassword;
+
   const isFormValid =
     formData.username.trim() &&
     formData.email.trim() &&
     formData.password.trim() &&
+    formData.confirmPassword.trim() &&
     isEmailValid &&
-    isPasswordValid;
+    isPasswordValid &&
+    passwordsMatch;
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -85,6 +93,10 @@ const Register = () => {
     if (email && !emailRegex.test(email))
       errors.email = "Enter a valid email address";
     if (!password) errors.password = "Password is required";
+    if (!formData.confirmPassword.trim())
+      errors.confirmPassword = "Confirm password is required";
+    if (password && formData.confirmPassword.trim() && !passwordsMatch)
+      errors.confirmPassword = "Passwords do not match";
 
     if (
       !passwordRules.length ||
@@ -119,24 +131,6 @@ const Register = () => {
       }
     }
   };
-
-  const Rule = ({ ok, label }) => (
-    <div className="flex items-center gap-2 text-xs">
-      <span
-        className={`w-2 h-2 rounded-full ${ok ? "bg-green-500" : "bg-gray-400 dark:bg-gray-600"
-          }`}
-      />
-      <span
-        className={
-          ok
-            ? "text-green-600 dark:text-green-400"
-            : "text-gray-500 dark:text-gray-400"
-        }
-      >
-        {label}
-      </span>
-    </div>
-  );
 
   return (
     <div className="min-h-screen relative overflow-hidden bg-white dark:bg-[#06070a] text-zinc-900 dark:text-white transition-colors">
@@ -296,10 +290,11 @@ const Register = () => {
                       onChange={handleChange}
                       aria-invalid={!!validationErrors.password}
                       aria-describedby="password-error"
-                      className={`w-full px-3 py-2 pr-11 rounded-md border pr-10 transition focus:ring-2 focus:ring-indigo-500 focus:shadow-md outline-none bg-zinc-50 dark:bg-white/[0.04] ${validationErrors.password
-                        ? "border-red-500"
-                        : "border-zinc-200 dark:border-white/10"
-                        }`}
+                      className={`w-full px-3 py-2 pr-11 rounded-md border transition focus:ring-2 focus:ring-indigo-500 focus:shadow-md outline-none bg-zinc-50 dark:bg-white/[0.04] ${
+                        validationErrors.password
+                          ? "border-red-500"
+                          : "border-zinc-200 dark:border-white/10"
+                      }`}
                     />
 
                     <button
@@ -307,22 +302,9 @@ const Register = () => {
                       onClick={() => setShowPassword((s) => !s)}
                       className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-500 dark:text-zinc-400 hover:text-zinc-800 dark:hover:text-white transition-colors"
                     >
-                      {showPassword ? (
-                        <EyeOff size={18} />
-                      ) : (
-                        <Eye size={18} />
-                      )}
+                      {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                     </button>
                   </div>
-
-                  {/* Password Rules */}
-                  <div className="mt-2 space-y-1">
-                    <Rule ok={passwordRules.length} label="At least 8 characters" />
-                    <Rule ok={passwordRules.upper} label="One uppercase letter" />
-                    <Rule ok={passwordRules.lower} label="One lowercase letter" />
-                    <Rule ok={passwordRules.number} label="One number" />
-                  </div>
-
                   {validationErrors.password && (
                     <p id="password-error" className="text-xs text-red-500 mt-1">
                       {validationErrors.password}
@@ -330,17 +312,44 @@ const Register = () => {
                   )}
                 </div>
 
-                {/* Button */}
-                <button
-                  type="submit"
-                  disabled={!isFormValid || loading}
-                  className="w-full py-3 rounded-2xl text-black font-semibold bg-emerald-400 hover:scale-[1.01] hover:bg-emerald-300 active:scale-[0.99] transition-all duration-300 shadow-xl shadow-emerald-500/20 disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  {loading ? "Creating Account..." : "Register"}
-                </button>
+                {/* Confirm Password */}
+                <div>
+                  <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                    Confirm Password
+                  </label>
+                  <div className="relative mt-1">
+                    <input
+                      name="confirmPassword"
+                      type={showConfirmPassword ? "text" : "password"}
+                      value={formData.confirmPassword}
+                      onChange={handleChange}
+                      aria-invalid={!!validationErrors.confirmPassword}
+                      aria-describedby="confirmPassword-error"
+                      className={`w-full px-3 py-2 pr-11 rounded-md border transition focus:ring-2 focus:ring-indigo-500 focus:shadow-md outline-none bg-zinc-50 dark:bg-white/[0.04] ${
+                        validationErrors.confirmPassword
+                          ? "border-red-500"
+                          : passwordsMatch
+                          ? "border-green-500"
+                          : "border-zinc-200 dark:border-white/10"
+                      }`}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowConfirmPassword((s) => !s)}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-500 dark:text-zinc-400 hover:text-zinc-800 dark:hover:text-white transition-colors"
+                    >
+                      {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                    </button>
+                  </div>
+                  {validationErrors.confirmPassword && (
+                    <p id="confirmPassword-error" className="text-xs text-red-500 mt-1">
+                      {validationErrors.confirmPassword}
+                    </p>
+                  )}
+                </div>
 
               {/* Password Rules */}
-              <div className="mt-2 space-y-1">
+              <div className="mt-2 grid grid-cols-2 gap-2 text-xs">
                 <PasswordRule ok={passwordRules.length} label="At least 8 characters" />
                 <PasswordRule ok={passwordRules.upper} label="One uppercase letter" />
                 <PasswordRule ok={passwordRules.lower} label="One lowercase letter" />
@@ -352,6 +361,16 @@ const Register = () => {
                   {validationErrors.password}
                 </p>
               )}
+
+                {/* Button */}
+                <button
+                  type="submit"
+                  disabled={!isFormValid || loading}
+                  className="w-full py-3 rounded-2xl text-black font-semibold bg-emerald-400 hover:scale-[1.01] hover:bg-emerald-300 active:scale-[0.99] transition-all duration-300 shadow-xl shadow-emerald-500/20 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {loading ? "Creating Account..." : "Register"}
+                </button>
+
                 {/* Sign in */}
                 <p className="text-center text-sm text-gray-500 mt-4">
                   Already have an account?{" "}
