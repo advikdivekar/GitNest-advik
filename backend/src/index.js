@@ -24,8 +24,6 @@ app.use(cors({
   origin: process.env.FRONTEND_URL || 'http://localhost:5173',
   credentials: true,
 }));
-// Middleware
-app.use(cors());
 app.use(express.json());
 app.use(mongoSanitize());
 app.use(morgan(process.env.NODE_ENV === 'production' ? 'combined' : 'dev'));
