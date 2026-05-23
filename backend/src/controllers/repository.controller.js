@@ -1,4 +1,5 @@
 import Repository from '../models/Repository.model.js';
+import User from '../models/User.model.js';
 import asyncHandler from '../utils/asyncHandler.js';
 import AppError from '../utils/AppError.js';
 import { sendSuccess } from '../utils/responseHandlers.js';
@@ -49,24 +50,29 @@ export const createRepository = asyncHandler(async (req, res, next)=> {
     sendSuccess(res, 201, repository, 'Repository created successfully');
 });
 
-export const getRepository = asyncHandler(async (req, resizeBy, next) => {
+export const getRepository = asyncHandler(async (req, res, next) => {
     const { username, reponame } = req.params;
 
-    const repository = await Repository.findOne({ name: reponame})
-    .populate('owner', 'username avatarUrl bio');
-
-    if(!repository) {
+    const owner = await User.findOne({ username: username.toLowerCase() });
+    if (!owner) {
         return next(new AppError('Repository not found', 404));
     }
 
-    if(
+    const repository = await Repository.findOne({ name: reponame, owner: owner._id })
+        .populate('owner', 'username avatarUrl bio');
+
+    if (!repository) {
+        return next(new AppError('Repository not found', 404));
+    }
+
+    if (
         repository.visibility === 'private' &&
         repository.owner._id.toString() !== req.user?.id
     ) {
         return next(new AppError('Repository not found', 404));
     }
 
-    sendSuccess(resizeBy, 200, repository);
+    sendSuccess(res, 200, repository);
 });
 
 export const getUserRepositories = asyncHandler(async (req, res, next) => {
