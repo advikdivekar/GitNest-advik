@@ -6,11 +6,7 @@ import { sendSuccess } from '../utils/responseHandlers.js';
 import { logActivity } from '../services/activity.service.js';
 import ACTIVITY_TYPES from '../constants/activityTypes.js';
 
-/**
- * @desc    Get user profile by ID or username
- * @route   GET /api/v1/users/:username
- * @access  Public
- */
+// Get user profile by ID or username
 export const getUserProfile = asyncHandler(async (req, res, next) => {
   const { username } = req.params;
 
@@ -33,11 +29,7 @@ export const getUserProfile = asyncHandler(async (req, res, next) => {
   sendSuccess(res, 200, user, 'User profile fetched successfully');
 });
 
-/**
- * @desc    Follow a user
- * @route   POST /api/v1/users/:username/follow
- * @access  Private
- */
+// Follow a user
 export const followUser = asyncHandler(async (req, res, next) => {
   const target = await User.findOne({ username: req.params.username.toLowerCase() });
   if (!target) return next(new AppError('User not found', 404));
@@ -52,11 +44,7 @@ export const followUser = asyncHandler(async (req, res, next) => {
   sendSuccess(res, 200, null, 'Followed successfully');
 });
 
-/**
- * @desc    Unfollow a user
- * @route   DELETE /api/v1/users/:username/follow
- * @access  Private
- */
+// Unfollow a user
 export const unfollowUser = asyncHandler(async (req, res, next) => {
   const target = await User.findOne({ username: req.params.username.toLowerCase() });
   if (!target) return next(new AppError('User not found', 404));
@@ -68,11 +56,7 @@ export const unfollowUser = asyncHandler(async (req, res, next) => {
   sendSuccess(res, 200, null, 'Unfollowed successfully');
 });
 
-/**
- * @desc    Update current user's profile
- * @route   PUT /api/v1/users/profile
- * @access  Private
- */
+// Update current user's profile
 export const updateProfile = asyncHandler(async (req, res, next) => {
   const { bio, location, website, avatarUrl } = req.body;
 
@@ -125,3 +109,22 @@ export const updateProfile = asyncHandler(async (req, res, next) => {
   sendSuccess(res, 200, user, 'Profile updated successfully');
 });
 
+// Get followers of a user
+export const getFollowers = asyncHandler(async (req, res, next) => {
+  const user = await User.findOne({ username: req.params.username.toLowerCase() })
+  .populate('followers', 'username avatarUrl bio');
+
+  if(!user) return next(new AppError('User not found', 404));
+
+  sendSuccess(res, 200, user.followers, 'Followers fetched successfully');
+});
+
+// Get following of a user
+export const getFollowing = asyncHandler(async (req, res, next) => {
+  const user = await User.findOne({ username: req.params.username.toLowerCase() })
+  .populate('following', 'username avatarUrl bio');
+
+  if (!user) return next(new AppError('User not found', 404));
+
+  sendSuccess(res, 200, user.following, 'Following fetched successfully');
+});

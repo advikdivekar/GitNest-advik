@@ -8,6 +8,7 @@ import './App.css';
 import Login from './components/auth/Login';
 import Register from './components/auth/Register';
 import GitNestHomepage from './pages/GitNestHomepage';
+import DocumentationPage from './pages/DocumentationPage';
 import NotFound from './pages/NotFound';
 import PullRequestsPage from './pages/PullRequestsPage';
 import PullRequestDetailPage from './pages/PullRequestDetailPage';
@@ -52,6 +53,7 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/" element={<GitNestHomepage />} />
+        <Route path="/docs" element={<DocumentationPage />} />
         <Route path="/pull-requests" element={<PullRequestsPage />} />
         <Route path="/pull-requests/:id" element={<PullRequestDetailPage />} />
         <Route path="/activities" element={<ActivityFeedPage />} />

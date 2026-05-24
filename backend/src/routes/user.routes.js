@@ -1,5 +1,12 @@
 import express from 'express';
-import { getUserProfile, updateProfile, followUser, unfollowUser } from '../controllers/user.controller.js';
+import {
+    getUserProfile,
+    updateProfile,
+    followUser,
+    unfollowUser,
+    getFollowers,
+    getFollowing,
+} from '../controllers/user.controller.js';
 import { protect } from '../middleware/authMiddleware.js';
 import validate from '../middleware/validate.js';
 import { updateProfileValidator } from '../validators/user.validators.js';
@@ -7,9 +14,14 @@ import { updateProfileValidator } from '../validators/user.validators.js';
 const router = express.Router();
 
 router.get('/:username', getUserProfile);
+//Public routes
+router.get('/:username', getUserProfile);
+router.get('/:username/followers', getFollowers);
+router.get('/:username/following', getFollowing);
+
+//Protected routes
 router.put('/profile', protect, validate(updateProfileValidator), updateProfile);
 router.post('/:username/follow', protect, followUser);
 router.delete('/:username/follow', protect, unfollowUser);
 
 export default router;
-
