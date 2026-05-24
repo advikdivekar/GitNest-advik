@@ -96,9 +96,12 @@ export default function GitNestHomepage() {
                             {isDarkMode ? '🌞 Light' : '🌙 Dark'}
                         </button>
                         <div className="flex items-center gap-3">
-                            <button className="hidden sm:flex px-4 py-2 rounded-xl border border-zinc-200 dark:border-white/10 bg-zinc-50 dark:bg-white/[0.03] text-sm text-zinc-600 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-white/[0.06] transition-all">
+                            <Link
+                                to="/docs"
+                                className="hidden sm:flex px-4 py-2 rounded-xl border border-zinc-200 dark:border-white/10 bg-zinc-50 dark:bg-white/[0.03] text-sm text-zinc-600 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-white/[0.06] transition-all"
+                            >
                                 Documentation
-                            </button>
+                            </Link>
 
                             <Link to="/register" className="px-5 py-2 rounded-xl bg-emerald-400 text-black font-semibold text-sm hover:scale-[1.02] transition-all shadow-lg shadow-emerald-500/20 flex items-center gap-2">
                                 Start Contributing
