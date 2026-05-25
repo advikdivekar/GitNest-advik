@@ -1,8 +1,4 @@
 import 'dotenv/config';
-if (!process.env.JWT_SECRET) {
-  throw new Error('FATAL: JWT_SECRET environment variable is not set. Refusing to start.');
-}
-
 import express from 'express';
 import cors from 'cors';
 import rateLimit from 'express-rate-limit';
@@ -20,9 +16,13 @@ import { requestIdMiddleware, attachRequestIdToResponse } from './middleware/req
 import repositoryRoutes from './routes/repository.routes.js';
 import activityRoutes from './routes/activity.routes.js';
 
+if (!process.env.JWT_SECRET) {
+  console.error('FATAL: JWT_SECRET is not configured. Server cannot start securely.');
+  process.exit(1);
+}
+
 const app = express();
 const PORT = process.env.PORT || 5000;
-connectDB();
 
 // corsOptions restricts Access-Control-Allow-Origin to the FRONTEND_URL
 // allowlist (supports comma-separated values for multi-host deployments).
@@ -64,6 +64,5 @@ app.use((req, res, next) => {
 app.use(errorHandler);
 
 app.listen(PORT, () => {
-  // eslint-disable-next-line no-console
   console.log(`Server running on port ${PORT}`);
 });
