@@ -16,6 +16,7 @@ import PullRequestDetailPage from './pages/PullRequestDetailPage';
 import UserProfile from './pages/UserProfile';
 import ActivityFeedPage from './pages/ActivityFeed.jsx';
 import ComponentShowcase from './pages/ComponentShowcase.jsx';
+import GitNestPrivacy from './pages/GitNestPrivacy.jsx';
 import BackToTop from './components/BackToTop/BackToTop';
 import GitNestTerms from './pages/GitNestTerms.jsx';
 import RepositoryArchitecturePage from './pages/repositories/RepositoryArchitecturePage.jsx';
@@ -63,6 +64,7 @@ function App() {
           <Route path="/:owner/:repo/architecture" element={<RepositoryArchitecturePage />} />
           <Route path="/:username" element={<UserProfile />} />
           <Route path="/showcase" element={<ComponentShowcase />} />
+          <Route path="/privacy" element={<GitNestPrivacy />} />
           <Route path="/terms" element={<GitNestTerms />} />
 
           <Route element={<ProtectedRoute />}>
