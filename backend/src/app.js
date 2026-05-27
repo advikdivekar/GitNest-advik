@@ -13,6 +13,8 @@ import activityRoutes from './routes/activity.routes.js';
 import pullRequestRoutes from './routes/pullRequest.routes.js';
 import architectureRoutes from './routes/architectureRoutes.js';
 import healthRoute from './routes/health.route.js';
+import commitHistoryRoutes from './routes/commitHistory.routes.js';
+import fileBrowserRoutes from './routes/fileBrowser.routes.js';
 import errorHandler from './middleware/errorHandler.js';
 import AppError from './utils/AppError.js';
 import swaggerSpec from './config/swagger.js';
@@ -81,6 +83,8 @@ const createApp = () => {
   app.use('/api/v1/users', userRoutes);
   app.use('/api/v1/activities', activityRoutes);
   app.use('/api/v1/pull-requests', pullRequestRoutes);
+  app.use('/api/v1/repositories', commitHistoryRoutes);
+  app.use('/api/v1/repositories', fileBrowserRoutes);
 
   // 404 handler
   app.use((req, res, next) => {
