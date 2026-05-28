@@ -781,7 +781,7 @@ export default function GitNestHomepage() {
 
                             <Users className="w-5 h-5 text-[#00b86b]" />
 
-                            <span className="text-[15px] font-bold tracking-[0.18em] uppercase white bg-gradient-to-r from-[#00b86b] to-[#4fd1ff] bg-clip-text text-transparent">
+                            <span className="text-[15px] font-bold tracking-[0.18em] uppercase bg-gradient-to-r from-[#00b86b] to-[#4fd1ff] bg-clip-text text-transparent">
                                 Open Source Collaboration
                             </span>
                         </div>
@@ -993,22 +993,7 @@ export default function GitNestHomepage() {
                                 ))}
                             </div>
 
-                        </div>
-
-
-                            <div className="space-y-5">
-
-                                <Link
-                                    to="/terms"
-                                    className="group flex items-center gap-3 text-[17px] text-[#64748b] dark:text-zinc-400 hover:text-[#00b86b] transition-all duration-300"
-                                >
-
-                                    <div className="w-2 h-2 rounded-full bg-[#00c97b] group-hover:scale-150 transition-transform" />
-
-                                    Terms & Conditions
-
-                                </Link>
-                            </div>
+                        
                         </div>
                     </div>
                 </div>
