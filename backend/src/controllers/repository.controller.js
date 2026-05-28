@@ -1,7 +1,6 @@
 import fs from 'fs';
 import path from 'path';
 import simpleGit from 'simple-git';
-import mongoose from 'mongoose';
 import Repository from '../models/Repository.model.js';
 import User from '../models/User.model.js';
 import asyncHandler from '../utils/asyncHandler.js';
@@ -360,49 +359,21 @@ export const forkRepository = asyncHandler(
             );
         }
 
-        const session = await mongoose.startSession();
-        let forked;
+        const existing = await Repository.findOne({
+            forkedFrom: original._id,
+            owner: req.user.id,
+        });
 
-        try {
-            session.startTransaction();
-
-            const existingQuery = Repository.findOne({
-                name: reponame,
-                owner: req.user.id,
-                forkedFrom: original._id,
-            });
-            const existing = typeof existingQuery?.session === 'function'
-                ? await existingQuery.session(session)
-                : await existingQuery;
-
-            if (existing) {
-                await session.abortTransaction();
-                return next(
-                    new AppError(
-                        'You have already forked this repository',
-                        400
-                    )
-                );
-            }
-
-            [forked] = await Repository.create(
-                [
-                    {
-                        name: original.name,
-                        owner: req.user.id,
-                        description: original.description,
-                        visibility: original.visibility,
-                        language: original.language,
-                        topics: original.topics,
-                        defaultBranch: original.defaultBranch,
-                        forkedFrom: original._id,
-                    },
-                ],
-                { session }
+        if (existing) {
+            return next(
+                new AppError(
+                    'You have already forked this repository',
+                    400
+                )
             );
+        }
 
         // Resolve a safe fork name — auto-suffix if original name is taken
-        // by a non-fork repo already in the user's account
         let forkName = original.name;
         const nameConflict = await Repository.findOne({
             owner: req.user.id,

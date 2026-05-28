@@ -1,4 +1,5 @@
 import express from 'express';
+import compression from 'compression';
 import cors from 'cors';
 import helmet from 'helmet';
 import mongoSanitize from 'express-mongo-sanitize';
@@ -26,6 +27,7 @@ const createApp = () => {
   const app = express();
 
   app.disable('x-powered-by');
+  app.use(compression({ threshold: 1024 }));
 
   if (process.env.TRUST_PROXY === '1') {
     app.set('trust proxy', 1);
