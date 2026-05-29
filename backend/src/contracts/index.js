@@ -101,6 +101,18 @@ const listPullRequestsData = {
   required: ['pullRequests', 'counts', 'pagination'],
 };
 
+const searchQuery = {
+  type: 'object',
+  additionalProperties: true,
+  properties: {
+    q: { type: 'string', minLength: 2, maxLength: 100 },
+    type: { type: 'string', enum: ['users', 'repositories', 'pullRequests', 'all'] },
+    page: { type: 'integer', minimum: 1 },
+    limit: { type: 'integer', minimum: 1, maximum: 50 },
+  },
+  required: ['q'],
+};
+
 export const contracts = {
   auth: {
     register: { tags: ['Auth'], summary: 'Register a user', request: { body: registerBody }, responses: { 201: sharedSchemas.successEnvelope(sharedSchemas.authUser) } },
@@ -138,6 +150,9 @@ export const contracts = {
     close: { tags: ['Pull Requests'], security: [{ bearerAuth: [] }], request: { params: idParam }, responses: { 200: sharedSchemas.successEnvelope(sharedSchemas.pullRequest) } },
     comment: { tags: ['Pull Requests'], security: [{ bearerAuth: [] }], request: { params: idParam, body: { type: 'object', additionalProperties: false, properties: { body: { type: 'string', minLength: 1 }, type: { type: 'string', enum: ['general', 'review'] } }, required: ['body'] } }, responses: { 201: sharedSchemas.successEnvelope(sharedSchemas.pullRequestComment) } },
     review: { tags: ['Pull Requests'], security: [{ bearerAuth: [] }], request: { params: idParam, body: { type: 'object', additionalProperties: false, properties: { action: { type: 'string', enum: ['approve', 'changes_requested', 'comment'] }, comment: { type: 'string' } }, required: ['action'] } }, responses: { 201: sharedSchemas.successEnvelope(sharedSchemas.review) } },
+  },
+  search: {
+    global: { tags: ['Search'], request: { query: searchQuery }, responses: { 200: sharedSchemas.successEnvelope({ type: 'object', additionalProperties: true }) } },
   },
 };
 
