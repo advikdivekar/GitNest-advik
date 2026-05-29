@@ -158,6 +158,7 @@ export const contracts = {
   search: {
     global: { tags: ['Search'], request: { query: searchQuery }, responses: { 200: sharedSchemas.successEnvelope({ type: 'object', additionalProperties: true }) } },
   },
+},
 };
 
 export { components, sharedSchemas };
