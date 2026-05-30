@@ -27,9 +27,9 @@ function App() {
 
   useEffect(() => {
     if (isDarkMode) {
-      document.documentElement.classList.add('dark');
+      document.documentElement.classList.add("dark");
     } else {
-      document.documentElement.classList.remove('dark');
+      document.documentElement.classList.remove("dark");
     }
   }, [isDarkMode]);
 
@@ -43,13 +43,21 @@ function App() {
           <Route path="/" element={<GitNestHomepage />} />
           <Route path="/docs" element={<DocumentationPage />} />
           <Route path="/pull-requests" element={<PullRequestsPage />} />
-          <Route path="/pull-requests/:id" element={<PullRequestDetailPage />} />
+          <Route
+            path="/pull-requests/:id"
+            element={<PullRequestDetailPage />}
+          />
           <Route path="/activities" element={<ActivityFeedPage />} />
-          <Route path="/:owner/:repo/architecture" element={<RepositoryArchitecturePage />} />
+          <Route
+            path="/:owner/:repo/architecture"
+            element={<RepositoryArchitecturePage />}
+          />
           <Route path="/user/:username" element={<UserProfile />} />
           <Route path="/showcase" element={<ComponentShowcase />} />
           <Route path="/privacy" element={<GitNestPrivacy />} />
           <Route path="/terms" element={<GitNestTerms />} />
+          <Route path="/contact" element={<ContactPage />} />
+          <Route path="/oauth-success" element={<OAuthSuccess />} />
 
           <Route element={<ProtectedRoute />}>
             <Route path="/dashboard" element={<Dashboard />} />
