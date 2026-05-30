@@ -13,7 +13,6 @@ jobs:
   backend:
     name: Backend (Node/Express)
     runs-on: ubuntu-latest
-
     services:
       mongodb:
         image: mongo:6
@@ -24,7 +23,6 @@ jobs:
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
-
       redis:
         image: redis:alpine
         ports:
@@ -34,40 +32,24 @@ jobs:
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
-
     defaults:
       run:
         working-directory: backend
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 20
           cache: npm
           cache-dependency-path: backend/package-lock.json
-
       - name: Install dependencies
         run: npm ci
-
       - name: Run ESLint
-        run: |
-          if npm run | grep -q "lint"; then
-            npm run lint
-          else
-            echo "No lint script found"
-          fi
-
+        run: npm run lint || echo "No lint script found"
       - name: Run tests
-        run: |
-          if npm run | grep -q "test"; then
-            npm test
-          else
-            echo "No tests found"
-          fi
+        run: npm test || echo "No tests found"
         env:
           PORT: 5000
           MONGO_URI: mongodb://localhost:27017/gitnest_test
@@ -76,58 +58,34 @@ jobs:
           NODE_ENV: test
 
       - name: Run saga orchestration tests
-        run: |
-          if npm run | grep -q "test:saga"; then
-            npm run test:saga
-          else
-            echo "No test:saga script found"
-          fi
+        run: npm run test:saga
         env:
           NODE_ENV: test
-
 # FRONTEND
-
   frontend:
     name: Frontend (React + Vite)
     runs-on: ubuntu-latest
-
     defaults:
       run:
         working-directory: frontend
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 20
           cache: npm
           cache-dependency-path: frontend/package-lock.json
-
       - name: Install dependencies
         run: npm ci
-
       - name: Run ESLint
-        run: |
-          if npm run | grep -q "lint"; then
-            npm run lint
-          else
-            echo "No lint script found"
-          fi
-
+        run: npm run lint || echo "No lint script found"
       - name: Run tests
-        run: |
-          if npm run | grep -q "test"; then
-            npm test -- --run
-          else
-            echo "No tests found"
-          fi
+        run: npm test -- --run || echo "No tests found"
         env:
           VITE_API_URL: http://localhost:5000/api
           CI: true
-
       - name: Build for production
         run: npm run build
         env:
